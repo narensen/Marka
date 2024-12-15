@@ -23,31 +23,33 @@ if groq_api_key:
 
 # Chat interface on the main page
 st.subheader("Chat with the AI Assistant")
-user_question = st.text_input("Ask a Marketing or Sales question:", key="user_input_main")
+user_question = st.text_area("Ask a Marketing or Sales question:", key="user_input_main", height=100)
 
-if user_question:
-    # Add user question to conversation history
-    st.session_state.conversation_history.append({"role": "user", "content": user_question})
-    
-    # Construct the prompt
-    prompt = f"""You are an AI Powered Chatbot who provides answers to Marketing and Sales related queries. 
-    Your responses should always be confident and actionable. 
-    You should not respond to any other kind of questions which are unrelated to Marketing and Sales.
-    User question: {user_question}
-    """
-    
-    # Generate the AI response
-    try:
-        response = groq_chat.invoke(st.session_state.conversation_history + [{"role": "user", "content": prompt}])
-        ai_response = response.content
-        # Add AI response to conversation history
-        st.session_state.conversation_history.append({"role": "assistant", "content": ai_response})
-    except Exception as e:
-        ai_response = f"Error: {str(e)}"
-        st.session_state.conversation_history.append({"role": "assistant", "content": ai_response})
-    
-    # Display the AI response
-    st.markdown(f"**AI:** {ai_response}")
+# Add a submit button
+if st.button("Submit"):
+    if user_question:
+        # Add user question to conversation history
+        st.session_state.conversation_history.append({"role": "user", "content": user_question})
+        
+        # Construct the prompt
+        prompt = f"""You are an AI Powered Chatbot who provides answers to Marketing and Sales related queries. 
+        Your responses should always be confident and actionable. 
+        You should not respond to any other kind of questions which are unrelated to Marketing and Sales.
+        User question: {user_question}
+        """
+        
+        # Generate the AI response
+        try:
+            response = groq_chat.invoke(st.session_state.conversation_history + [{"role": "user", "content": prompt}])
+            ai_response = response.content
+            # Add AI response to conversation history
+            st.session_state.conversation_history.append({"role": "assistant", "content": ai_response})
+        except Exception as e:
+            ai_response = f"Error: {str(e)}"
+            st.session_state.conversation_history.append({"role": "assistant", "content": ai_response})
+        
+        # Display the AI response
+        st.markdown(f"**AI:** {ai_response}")
 
 # Display chat history
 if st.session_state.conversation_history:
